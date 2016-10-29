@@ -67,7 +67,7 @@ void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, uchar4 * const d_r
 {
   //You must fill in the correct sizes for the blockSize and gridSize
   //currently only one block with one thread is being launched
-  const dim3 blockSize(ceil((numCols+15)/16), ceil((numRows+15)/16), 1);  //TODO
+  const dim3 blockSize(ceil(numCols/16), ceil(numRows/16), 1);  //TODO
   const dim3 gridSize( 16, 16, 1);  //TODO
   rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows, numCols);
   
