@@ -5,8 +5,8 @@ NVCC=nvcc
 # locations on most linux distros #
 ###################################
 
-OPENCV_LIBPATH=/usr/lib
-OPENCV_INCLUDEPATH=/usr/include
+OPENCV_LIBPATH=`pkg-config --libs opencv`
+OPENCV_INCLUDEPATH=`pkg-config --cflags opencv`
 
 ###################################################
 # On Macs the default install locations are below #
@@ -20,9 +20,9 @@ OPENCV_INCLUDEPATH=/usr/include
 #OPENCV_LIBPATH=/opt/local/lib
 #OPENCV_INCLUDEPATH=/opt/local/include
 
-OPENCV_LIBS=-lopencv_core -lopencv_imgproc -lopencv_highgui
+#OPENCV_LIBS=-lopencv_core -lopencv_imgproc -lopencv_highgui
 
-CUDA_INCLUDEPATH=/usr/local/cuda-5.0/include
+CUDA_INCLUDEPATH=/usr/local/cuda-7.5/include
 
 ######################################################
 # On Macs the default install locations are below    #
@@ -36,7 +36,7 @@ NVCC_OPTS=-O3 -arch=sm_20 -Xcompiler -Wall -Xcompiler -Wextra -m64
 GCC_OPTS=-O3 -Wall -Wextra -m64
 
 student: main.o student_func.o compare.o reference_calc.o Makefile
-	$(NVCC) -o HW1 main.o student_func.o compare.o reference_calc.o -L $(OPENCV_LIBPATH) $(OPENCV_LIBS) $(NVCC_OPTS)
+	$(NVCC) -o HW1 main.o student_func.o compare.o reference_calc.o  $(OPENCV_LIBPATH) $(NVCC_OPTS)
 
 main.o: main.cpp timer.h utils.h reference_calc.cpp compare.cpp HW1.cpp
 	g++ -c main.cpp $(GCC_OPTS) -I $(CUDA_INCLUDEPATH) -I $(OPENCV_INCLUDEPATH)
