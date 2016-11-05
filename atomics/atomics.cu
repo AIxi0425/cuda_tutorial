@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "gputimer.h"
 
 #define NUM_THREADS 1000000
 #define ARRAY_SIZE 100
@@ -34,6 +35,7 @@ __global__ void increment_atomic(int *g)
 }
 int main(int arvc, char** argv)
 {
+	GpuTimer timer;
 	printf("%d total thread in %d blocks writing into %d array elements\n",
 		NUM_THREADS, NUM_THREADS / BLOCK_WIDTH, ARRAY_SIZE);
 	
@@ -47,13 +49,16 @@ int main(int arvc, char** argv)
 	cudaMemset((void *) d_array, 0, ARRAY_BYTES);
 
 	// launch the kernel
-	// increment_naive<<<NUM_THREADS/BLOCK_WIDTH, BLOCK_WIDTH>>>(d_array);
-	increment_atomic<<<NUM_THREADS/BLOCK_WIDTH, BLOCK_WIDTH>>>(d_array);
+	timer.Start();
+	increment_naive<<<NUM_THREADS/BLOCK_WIDTH, BLOCK_WIDTH>>>(d_array);
+	//increment_atomic<<<NUM_THREADS/BLOCK_WIDTH, BLOCK_WIDTH>>>(d_array);
+	timer.Stop();
 
 	// copy back the array of sums from GPU and print
 	cudaMemcpy(h_array, d_array, ARRAY_BYTES, cudaMemcpyDeviceToHost);
 	print_array(h_array, ARRAY_SIZE);
 	printf("\n");
+	printf("Time elapsed = %g ms\n", timer.Elapsed());
 
 	// free GPU memory allocation and exit
 	cudaFree(d_array);
