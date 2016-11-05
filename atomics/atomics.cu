@@ -22,6 +22,16 @@ __global__ void increment_naive(int *g)
 	g[i] = g[i] + 1;
 }
 
+__global__ void increment_atomic(int *g)
+{
+	// which thread is this?
+	int i = threadIdx.x + blockDim.x * blockIdx.x;
+
+	// each thread to increment consecutive elements, wrapping at ARRAY_SIZE
+	i = i % ARRAY_SIZE;
+	atomicAdd(&g[i], 1);
+	
+}
 int main(int arvc, char** argv)
 {
 	printf("%d total thread in %d blocks writing into %d array elements\n",
@@ -37,7 +47,8 @@ int main(int arvc, char** argv)
 	cudaMemset((void *) d_array, 0, ARRAY_BYTES);
 
 	// launch the kernel
-	increment_naive<<<NUM_THREADS/BLOCK_WIDTH, BLOCK_WIDTH>>>(d_array);
+	// increment_naive<<<NUM_THREADS/BLOCK_WIDTH, BLOCK_WIDTH>>>(d_array);
+	increment_atomic<<<NUM_THREADS/BLOCK_WIDTH, BLOCK_WIDTH>>>(d_array);
 
 	// copy back the array of sums from GPU and print
 	cudaMemcpy(h_array, d_array, ARRAY_BYTES, cudaMemcpyDeviceToHost);
