@@ -76,7 +76,7 @@ int main()
 	cudaMemcpy((void *)d_q, (void *)h_q, sizeof(int) * width * width, cudaMemcpyHostToDevice);
 
 	// 
-	const dim3 cat(1);
+	const dim3 cat(1, 1);
 	const dim3 dog(width, width, 1);
 
 	// launch the kernel
